@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <title>COVID-19 news headlines sentiment tracker</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/sticky-footer/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+  </head>
+  <body class="d-flex flex-column h-100">
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <h1>COVID-19 news headlines sentiment tracker</h1>
+            <br>
+            <p>Hi! Are you tired of hearing about COVID-19 yet? News headline making you anxious? Me too, so I did a thing!</p>
+            <p>This right here is a very simple dashboard that shows the average sentiment of news headlines about COVID-19 and Coronavirus, almost in realtime.</p>
+            <br>
+            <canvas id="chart"></canvas>
+            <br>
+            <p>Time range: </p>
+            <button type="button" data-chart-mode="24" class="btn-chart-mode btn active">24 hours</button>
+            <button type="button" data-chart-mode="48" class="btn-chart-mode btn not-active">48 hours</button>
+            <button type="button" data-chart-mode="7d" class="btn-chart-mode btn not-active">7 days</button>
+            <button type="button" data-chart-mode="all" class="btn-chart-mode btn not-active">Since March 31st 2020</button>
+
+            <br><br><br>
+            <h4>How the heck..?</h4>
+            <p>This humble website uses data from a backend server running a machine learning service. The service is built around a very rudimentary NLP (Natural Language Processing) technique based on a <a href="https://en.wikipedia.org/wiki/Naive_Bayes_classifier" target="_blank">Naive Bayes classifier</a>, trained on the Sentiment140 dataset
+                (read more about it <a href="http://help.sentiment140.com/for-students/" target="_blank">here</a>). This dataset contains 1.6 million Tweets, pre-annotated with a sentiment index of 0 (negative), 2 (neutral) or 4 (positive). The classifier uses 
+                a technique similar to how email spam filters work, using probabilities of significant words being present in items annotated as either binary class.
+            </p>
+            <p>I wrote an article going over the classifier on Medium, read it <a href="https://medium.com/@sebastien.vezina/the-road-to-data-science-finally-a-first-project-1fcfcabc79c8" target="_blank">here</a>.</p>
+            <br>
+            <h5>The data</h5>
+            <p>News headlines are fetched hourly, 200 at a time (100 for keyword <i>COVID-19</i>, 100 more for keyword <i>coronavirus</i>), from <a href="https://newsapi.org/" target="_blank">News API</a>'s English sources, such as ABC News, Associated Press, BBC News, etc
+                (complete list available <a href="https://newsapi.org/docs/endpoints/sources" target="_blank">here</a>) and processed by the ML classifier.</p>
+            <br>
+            <h5>Code for my fellow nerds</h5>
+            <p>The Python code for the Flask backend server is <a href="https://github.com/sebastienvezina/covid19-headline-sentiment" target="_blank">here</a>.</p>
+            <p>The Google Colab notebook for the Naive Bayes model training can be viewed <a href="http://tiny.cc/np8bmz" target="_blank">here</a>.</p>
+            <p>The html/css/js code for this very sad website is <a href="https://github.com/sebastienvezina/covid19-headline-sentiment" target="_blank">here</a>.</p>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container social-container">
+            <span class="text-muted">This project was built entirely for fun and learning stuff by <a href="https://www.sebastienvezina.com/" target="_blank">Sébastien Vézina</a>.</span><br>
+            <span class="text-muted">I am an aspiring data scientist and AI engineer.</p>
+            Get in touch:
+            <ul class="social">
+                <li><a href="https://www.linkedin.com/in/s%C3%A9bastien-v%C3%A9zina-02257734/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                <li><a href="https://github.com/sebastienvezina" target="_blank"><i class="fa fa-github" aria-hidden="true"></a></i></li>
+                <li><a href="https://medium.com/@sebastien.vezina" target="_blank"><i class="fa fa-medium" aria-hidden="true"></a></i></li>
+              </ul>
+        </div>
+    </footer>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script>
+        var chart;
+
+        $('.btn-chart-mode').click(function(e){
+            //desactivate all buttons
+            $('.btn-chart-mode').removeClass('active').addClass('not-active');
+
+            var btn = $(this);
+            //make current button active
+            btn.removeClass('not-active').addClass('active');
+            mode = btn.attr('data-chart-mode');
+
+            $.getJSON("https://covid19.sebastienvezina.com/json?mode=" + mode, function(data) {  
+                chartData = {
+                labels: [],
+                datasets: [{
+                    label: 'COVID-19 news sentiment over time',
+                    borderColor: 'rgb(200, 0, 0)',
+                    data: []
+                    }]
+                }
+                $.each(data, function(key, value){
+                    chartData.labels.push(value[0]);
+                    chartData.datasets[0].data.push(value[1])
+                });
+                chart.data = chartData;
+                modeString = "";
+                switch (mode) {
+                    case 24:
+                        modeString = "Last 24 hours";
+                        break;
+                    case 48:
+                        modeString = "Last 48 hours";
+                        break;
+                    case '7d':
+                        modeString = "Last 7 days";
+                        break;
+                    default:
+                        modeString = "Since March 31st 2020"
+
+                }
+                chart.options.scales.xAxes[0].scaleLabel.labelString = modeString;
+                chart.update()
+            });
+
+        });
+
+        $.getJSON("https://covid19.sebastienvezina.com/json?mode=24", function(data) {  
+            chartData = {
+                labels: [],
+                datasets: [{
+                    label: 'COVID-19 news sentiment over time',
+                    borderColor: 'rgb(200, 0, 0)',
+                    data: []
+                }]
+            }
+            $.each(data, function(key, value){
+                chartData.labels.push(value[0]);
+                chartData.datasets[0].data.push(value[1])
+            });
+
+            var ctx = document.getElementById('chart').getContext('2d');
+            var monthDayTracker = '';
+            chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: chartData,
+
+                // Configuration options go here
+                options: {
+                    legend: {
+                        display: false,
+                    },
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function(label, index, labels) {
+                                        return Number(label).toFixed(2);
+                                    },
+                                    fontColor: '#eee',
+                                    fontSize: 14,
+                                },
+                                
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Positivity scale (0 is more negative, 4 is more positive)',
+                                    fontColor: '#eee',
+                                    fontSize: 16,
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    callback: function(label, index, labels) {
+                                        var d = new Date(label);
+                                        var monthDayCurrent = d.getMonth() + d.getDay();
+                                        var dateTimeOptions = {}
+                                        if (monthDayTracker != monthDayCurrent) {
+                                            monthDayTracker = monthDayCurrent;
+                                            dateTimeOptions = {
+                                                month: 'short',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: false
+                                            }; 
+                                        }else {
+                                            dateTimeOptions = {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: false
+                                            };
+                                        }
+
+                                        out = new Intl.DateTimeFormat('en-US', dateTimeOptions).format(d);
+
+                                        return out;
+                                    },
+                                    fontColor: '#eee',
+                                    fontSize: 14,
+                                },
+                                
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Last 24 hours EDT',
+                                    fontColor: '#eee',
+                                    fontSize: 16,
+                                }
+                            }
+                        ]
+                
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+body {
+    background-color: #111111; 
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    color: #ddd;
+}
+
+a {
+    color: #c80000;
+}
+a:hover {
+    color: #880000;
+}
+.active {
+    color: #c80000;
+    border-color: #c80000;
+}
+.not-active {
+    color: #ddd;
+    background-color: #c80000;
+    border-color: #c80000;
+}
+.social-container {
+    vertical-align: middle;
+    text-align: right;
+   
+}
+.social-container .social {
+    font-size: 30px;
+    padding-left: 0px;
+}
+.social-container li {
+    display: inline-block;
+}
+.social-container li a {
+    color: rgba(255, 255, 255, 0.6);
+    list-style-type: none;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    transition: ease 0.3s;
+}
+.social-container li a:hover {
+    color: #ffffff;
+}
+.social:hover > li {
+    opacity: 0.5;
+}
+.social:hover > li:hover {
+    opacity: 1;
+}
