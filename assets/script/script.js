@@ -95,27 +95,17 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
                 xAxes: [
                     {
                         ticks: {
+                            maxTicksLimit:24,
                             callback: function(label, index, labels) {
                                 var d = new Date(label);
-                                var monthDayCurrent = d.getMonth() + d.getDay();
                                 var dateTimeOptions = {}
-                                if (monthDayTracker != monthDayCurrent) {
-                                    monthDayTracker = monthDayCurrent;
-                                    dateTimeOptions = {
-                                        month: 'short',
-                                        day: '2-digit',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false
-                                    }; 
-                                }else {
-                                    dateTimeOptions = {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false
-                                    };
-                                }
-
+                                dateTimeOptions = {
+                                    month: 'short',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                };
                                 out = new Intl.DateTimeFormat('en-US', dateTimeOptions).format(d);
 
                                 return out;
