@@ -19,27 +19,42 @@ $('.btn-chart-mode').click(function(e){
             data: []
             }]
         }
+        labels = [];
+        values = [];
         $.each(data, function(key, value){
-            chartData.labels.push(value[0]);
-            chartData.datasets[0].data.push(value[1])
+            labels.push(value[0]);
+            values.push(value[1]);
         });
+        chartData.labels = labels;
+        chartData.datasets[0].data = values;
+        
+        //get mean
+        mean = math.mean(values);
+       
+        
         chart.data = chartData;
         modeString = "";
         switch (mode) {
-            case 24:
+            case '24':
                 modeString = "Last 24 hours";
+                meanString = "24 hours mean: "
                 break;
-            case 48:
+            case '48':
                 modeString = "Last 48 hours";
+                meanString = "48 hours mean: "
                 break;
             case '7d':
                 modeString = "Last 7 days";
+                meanString = "7 days mean: "
                 break;
             default:
                 modeString = "Since March 31st 2020"
+                meanString = "Mean since March 31st 2020: "
 
         }
         chart.options.scales.xAxes[0].scaleLabel.labelString = modeString;
+        chart.options.annotation.annotations[0].value = mean; 
+        chart.options.annotation.annotations[0].label.content = meanString + Number(mean).toFixed(2);
         chart.update()
     });
 
@@ -48,26 +63,39 @@ $('.btn-chart-mode').click(function(e){
 $.getJSON(apiUrl + "?mode=24", function(data) {  
     chartData = {
         labels: [],
-        datasets: [{
-            label: 'COVID-19 news sentiment over time',
-            borderColor: 'rgb(200, 0, 0)',
-            data: []
-        }]
+        datasets: [
+            {
+                label: 'COVID-19 news sentiment over time',
+                borderColor: 'rgb(200, 0, 0)',
+                gridLines: {
+                    color: '#ddd'
+                },
+                data: []
+            }
+        ]
     }
+    labels = [];
+    values = [];
     $.each(data, function(key, value){
-        chartData.labels.push(value[0]);
-        chartData.datasets[0].data.push(value[1])
+        labels.push(value[0]);
+        values.push(value[1]);
     });
+    chartData.labels = labels;
+    chartData.datasets[0].data = values;
+    
+    //get mean
+    mean = math.mean(values);
+    console.log(mean);
+  
+
 
     var ctx = document.getElementById('chart').getContext('2d');
-    var monthDayTracker = '';
     chart = new Chart(ctx, {
         // The type of chart we want to create
         type: 'line',
 
         // The data for our dataset
         data: chartData,
-
         // Configuration options go here
         options: {
             legend: {
@@ -76,6 +104,9 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
             scales: {
                 yAxes: [
                     {
+                        gridLines: {
+                            color: '#333'
+                        },
                         ticks: {
                             callback: function(label, index, labels) {
                                 return Number(label).toFixed(2);
@@ -86,7 +117,7 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
                         
                         scaleLabel: {
                             display: true,
-                            labelString: 'Positivity scale (0 is more negative, 4 is more positive)',
+                            labelString: 'Positivity (0 is more negative, 4 is more positive)',
                             fontColor: '#eee',
                             fontSize: 16,
                         }
@@ -94,6 +125,9 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
                 ],
                 xAxes: [
                     {
+                        gridLines: {
+                            color: '#333'
+                        },
                         ticks: {
                             maxTicksLimit:24,
                             callback: function(label, index, labels) {
@@ -123,7 +157,23 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
                     }
                 ]
         
-            }
+            },
+
+            
+            annotation: {
+                annotations: [{
+                  type: 'line',
+                  mode: 'horizontal',
+                  scaleID: 'y-axis-0',
+                  value: mean,
+                  borderColor: '#eee',
+                  borderWidth: 2,
+                  label: {
+                    enabled: true,
+                    content: "24 hours mean: " + Number(mean).toFixed(2)
+                  }
+                }]
+              }
         }
     });
 });
