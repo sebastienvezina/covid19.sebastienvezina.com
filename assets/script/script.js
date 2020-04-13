@@ -206,10 +206,17 @@ function init() {
                   }
             }
         });
-        
         //keep ticks values
         ymax = chart.options.scales.yAxes[0].ticks.max;
         ymin = chart.options.scales.yAxes[0].ticks.min;
+
+        //set right label depending on width
+        if (chart.width <= 690) {
+            chart.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment";
+        }else {
+            chart.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment (0: negative, 2: neutral, 4: positive)";
+        }
+        
     });
 }
 init();
