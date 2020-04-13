@@ -85,10 +85,7 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
     
     //get mean
     mean = math.mean(values);
-    console.log(mean);
-  
-
-
+    
     var ctx = document.getElementById('chart').getContext('2d');
     chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -158,8 +155,6 @@ $.getJSON(apiUrl + "?mode=24", function(data) {
                 ]
         
             },
-
-            
             annotation: {
                 annotations: [{
                   type: 'line',
