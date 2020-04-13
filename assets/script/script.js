@@ -2,13 +2,13 @@ var chart;
 var apiUrl = "https://covid19-api.sebastienvezina.com/json";
 var ymin, ymax;
 
-$('.btn-pos-scale').click(function(e){
-    $('.btn-pos-scale').removeClass('active').addClass('not-active');
+$('.btn-sent-scale').click(function(e){
+    $('.btn-sent-scale').removeClass('active').addClass('not-active');
    
     var btn = $(this);
     //make current button active
     btn.removeClass('not-active').addClass('active');
-    scale = btn.attr('data-pos-scale');
+    scale = btn.attr('data-sent-scale');
     if (scale == "rel") {
         chart.options.scales.yAxes[0].ticks.min = ymin; //Math.min(...chartData.datasets[0].data) + 0.1;
         chart.options.scales.yAxes[0].ticks.max = ymax; //Math.max(...chartData.datasets[0].data);
@@ -76,7 +76,7 @@ $('.btn-chart-mode').click(function(e){
         chart.update()
         
         //keep ticks values
-        if ($('.btn-pos-scale .active').attr('data-pos-scale') == 'rel') {
+        if ($('.btn-sent-scale .active').attr('data-sent-scale') == 'rel') {
             ymax = chart.options.scales.yAxes[0].ticks.max;
             ymin = chart.options.scales.yAxes[0].ticks.min;  
         }
@@ -120,9 +120,18 @@ function init() {
             data: chartData,
             // Configuration options go here
             options: {
+                onResize: function(c, s) {
+                    w = s.width;
+                    if (w <= 690) {
+                        c.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment";
+                    }else {
+                        c.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment (0: negative, 2: neutral, 4: positive)";
+                    }
+                },
                 legend: {
                     display: false,
                 },
+
                 scales: {
                     yAxes: [
                         {
@@ -140,8 +149,8 @@ function init() {
                             
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Positivity level',
-                                fontColor: '#eee',
+                                labelString: 'Sentiment (0: negative, 2: neutral, 4: positive)',
+                                fontColor: '#ccc',
                                 fontSize: 16,
                             }
                         }
@@ -167,7 +176,7 @@ function init() {
     
                                     return out;
                                 },
-                                fontColor: '#eee',
+                                fontColor: '#ccc',
                                 fontSize: 14,
                             },
                             
