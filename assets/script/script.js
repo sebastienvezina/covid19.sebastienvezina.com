@@ -140,7 +140,7 @@ function init() {
                             
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Positivity (0 is more negative, 4 is more positive)',
+                                labelString: 'Positivity level',
                                 fontColor: '#eee',
                                 fontSize: 16,
                             }
