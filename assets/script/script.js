@@ -1,5 +1,5 @@
 var chart;
-var apiUrl = "https://covid19-api.sebastienvezina.com/hourlymeans/";
+var apiUrl = "https://covid19-api.sebastienvezina.com";
 var ymin, ymax;
 
 $('.btn-sent-scale').click(function(e){
@@ -28,8 +28,7 @@ $('.btn-chart-mode').click(function(e){
     btn.removeClass('not-active').addClass('active');
     mode = btn.attr('data-chart-mode');
 
-    $.getJSON(apiUrl + mode, function(data) {  
-        
+    $.getJSON(apiUrl + "/hourlymeans/" + mode, function(data) {  
         chartData = {
         labels: [],
         datasets: [{
@@ -86,7 +85,7 @@ $('.btn-chart-mode').click(function(e){
 });
 
 function init() {
-    $.getJSON(apiUrl + "24", function(data) {  
+    $.getJSON(apiUrl + "/hourlymeans/24", function(data) {  
         chartData = {
             labels: [],
             datasets: [
@@ -223,7 +222,27 @@ function init() {
             chart.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment (0: negative, 2: neutral, 4: positive)";
         }
         chart.update();
-        
+
     });
+
+    //fetch best 5
+    $.getJSON(apiUrl + "/newsheadlines/best/5", function(data) { 
+        outHtml = "";
+        $.each(data, function(key, value){
+            perc = Math.ceil(value['sentiment'] / 4 * 100);
+            outHtml += '<div class="progress" style=""><div class="progress-bar progress-red" role="progressbar" style="width: '+perc+'%; overflow: visible;" aria-valuenow="'+perc+'" aria-valuemin="0" aria-valuemax="100"> &nbsp;PI '+ Number(value['sentiment']).toFixed(2)+ ' - ' + value['title']+'</div></div></br>';
+            $('.headlines-best').html(outHtml);
+        });        
+    });
+    //fetch worst 5
+    $.getJSON(apiUrl + "/newsheadlines/worst/5", function(data) { 
+        outHtml = "";
+        $.each(data, function(key, value){
+            perc = Math.ceil(value['sentiment'] / 4 * 100);
+            outHtml += '<div class="progress" style=""><div class="progress-bar progress-red" role="progressbar" style="width: '+perc+'%; overflow: visible;" aria-valuenow="'+perc+'" aria-valuemin="0" aria-valuemax="100"> &nbsp;PI '+ Number(value['sentiment']).toFixed(2)+ ' - ' + value['title']+' - PI '+ Number(value['sentiment']).toFixed(2)+'</div></div></br>';
+            $('.headlines-worst').html(outHtml);
+        });        
+    });
+
 }
 init();

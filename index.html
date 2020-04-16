@@ -56,16 +56,35 @@
                 (complete list available <a href="https://newsapi.org/docs/endpoints/sources" target="_blank">here</a>) and processed by the ML classifier.</p>
             <br>
             <h5>Code for my fellow nerds</h5>
-            <p>The Python code for the Flask backend server is <a href="https://github.com/sebastienvezina/covid19-headline-sentiment" target="_blank">here</a>.</p>
+            <p>The Python code for the Flask backend server is <a href="https://github.com/sebastienvezina/covid19-sentiment-api" target="_blank">here</a>.</p>
             <p>The Google Colab notebook for the Naive Bayes model training can be viewed <a href="http://tiny.cc/np8bmz" target="_blank">here</a>.</p>
             <p>The html/css/js code for this very sad website is <a href="https://github.com/sebastienvezina/covid19.sebastienvezina.com" target="_blank">here</a>.</p>
+            <br>
+            <h5>What else?</h5>
+            <p>For added transparency, I decided to show the best 5 and worse 5 news headlines according to the machine learning model. I use the probability of the headline being positive as predicted by the Naive Bayes model
+                to compute a simple <i>positivity index</i>, or PI, on a scale of 0 to 4.</p>
+            <p>Example: if P(positive|headline) = 0.5, then the <i>positivity index</i> PI would equal 0.5 * 4, so 2. 
+            </p>
+            <div class="row row-cols-2">
+                <div class="col">
+                    <h6>Most positive headlines</h6>
+                    <div class="headlines-best"></div>
+                </div>
+                <div class="col">
+                    <h6>Least positive headlines</h6>
+                    <div class="headlines-worst"></div>
+               
+                </div>
+            </div>
+            <br>
+            <p>As you can see, the model is far from perfect and sometimes classifies positive sounding headlines as negative. During training, it was accurate to a bit over 76% with a ROC AUC score of 0.85 on a test set (see <a href="http://tiny.cc/np8bmz" target="_blank">the notebook</a>). The explanation might be that it was trained on Tweets and that the vocabulary space of Tweets differs from that of news headlines. More research would be needed to figure this out!</p>
         </div>
     </main>
 
     <footer class="footer mt-auto py-3">
         <div class="container social-container">
-            <span class="text-muted">This project was built entirely for fun and learning stuff by <a href="https://www.sebastienvezina.com/" target="_blank">Sébastien Vézina</a>.</span><br>
-            <span class="text-muted">I am an aspiring data scientist and ML engineer.</p>
+            <span class="text-muted">This project was built entirely for fun and learning stuff by <a href="https://www.sebastienvezina.com/" target="_blank">Sébastien Vézina</a></span><br>
+            <span class="text-muted">I am an aspiring data scientist and ML engineer</p>
             Get in touch:
             <ul class="social">
                 <li><a href="https://www.linkedin.com/in/s%C3%A9bastien-v%C3%A9zina-02257734/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
