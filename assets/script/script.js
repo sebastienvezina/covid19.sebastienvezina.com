@@ -1,5 +1,5 @@
 var chart;
-var apiUrl = "https://covid19-api.sebastienvezina.com/json";
+var apiUrl = "https://covid19-api.sebastienvezina.com/hourlymeans/";
 var ymin, ymax;
 
 $('.btn-sent-scale').click(function(e){
@@ -28,7 +28,8 @@ $('.btn-chart-mode').click(function(e){
     btn.removeClass('not-active').addClass('active');
     mode = btn.attr('data-chart-mode');
 
-    $.getJSON(apiUrl + "?mode=" + mode, function(data) {  
+    $.getJSON(apiUrl + mode, function(data) {  
+        
         chartData = {
         labels: [],
         datasets: [{
@@ -40,8 +41,8 @@ $('.btn-chart-mode').click(function(e){
         labels = [];
         values = [];
         $.each(data, function(key, value){
-            labels.push(value[0]);
-            values.push(value[1]);
+            labels.push(value['timestamp']);
+            values.push(value['mean']);
         });
         chartData.labels = labels;
         chartData.datasets[0].data = values;
@@ -85,7 +86,7 @@ $('.btn-chart-mode').click(function(e){
 });
 
 function init() {
-    $.getJSON(apiUrl + "?mode=24", function(data) {  
+    $.getJSON(apiUrl + "24", function(data) {  
         chartData = {
             labels: [],
             datasets: [
@@ -102,9 +103,11 @@ function init() {
         labels = [];
         values = [];
         $.each(data, function(key, value){
-            labels.push(value[0]);
-            values.push(value[1]);
+            labels.push(value['timestamp']);
+            values.push(value['mean']);
+
         });
+
         chartData.labels = labels;
         chartData.datasets[0].data = values;
         
@@ -165,8 +168,10 @@ function init() {
                                 callback: function(label, index, labels) {
                                     var d = new Date(label);
                                     var dateTimeOptions = {}
+                                    var optMonth = 'short'; //'narrow';
+                                   
                                     dateTimeOptions = {
-                                        month: 'short',
+                                        month: optMonth,
                                         day: '2-digit',
                                         hour: '2-digit',
                                         minute: '2-digit',
@@ -213,9 +218,11 @@ function init() {
         //set right label depending on width
         if (chart.width <= 690) {
             chart.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment";
+           // chart.options.scales.xAxes[0].scaleLabel.padding.top = 200;
         }else {
             chart.options.scales.yAxes[0].scaleLabel.labelString = "Sentiment (0: negative, 2: neutral, 4: positive)";
         }
+        chart.update();
         
     });
 }
